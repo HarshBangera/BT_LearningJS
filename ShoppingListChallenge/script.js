@@ -1,7 +1,7 @@
 const itemList = JSON.parse(localStorage.getItem("itemList") ?? "[]");
 if(itemList.length > 0){
     addFilterULClrBtnToContainer();
-    itemList.forEach((item) => addItemsToUL(item));
+    itemList.forEach((item) => addItemToUL(item));
 }
 
 const submit = document.querySelector('#item-form .btn');
@@ -14,12 +14,21 @@ submit.addEventListener('click', (e) => {
         return;
     }
 
+    if(submit.lastChild.textContent.includes("Update")){
+        itemList.push(item);
+        addItemToUL(item);
+        const itemListString = JSON.stringify(itemList);
+        localStorage.setItem("itemList", itemListString);
+        submit.lastChild.textContent = " Add Item";
+        return;
+    }
+
     if(itemList.length < 1){
         addFilterULClrBtnToContainer();
     }
 
     itemList.push(item);
-    addItemsToUL(item);
+    addItemToUL(item);
     const itemListString = JSON.stringify(itemList);
     localStorage.setItem("itemList", itemListString);
 });
@@ -52,7 +61,7 @@ function addFilterULClrBtnToContainer() {
     container.appendChild(clearBtn);
 }
 
-function addItemsToUL(item) {
+function addItemToUL(item) {
     const ul = document.getElementById('item-list');
     const li = document.createElement('li');
     const text = document.createTextNode(item);
@@ -64,6 +73,7 @@ function addItemsToUL(item) {
     btn.appendChild(i);
     btn.addEventListener('click', deleteItem);
     li.appendChild(btn);
+    li.addEventListener('click', onItemClick);
     ul.appendChild(li);
 }
 
@@ -110,10 +120,19 @@ function filterItems(e){
         return item.toLowerCase().includes(filterValue);
     });
     clearAllItems();
-    filteredItemList.forEach((item) => addItemsToUL(item));
+    filteredItemList.forEach((item) => addItemToUL(item));
 };
 
 function clearAllItems() {
     const items = document.querySelectorAll('li');
     items.forEach((item) => item.remove());
+}
+
+function onItemClick(e){
+    if(e.target.nodeName === "LI"){
+        document.getElementById('item-input').value = e.target.textContent;
+        submit.lastChild.textContent = " Update Item";
+        itemList.splice(itemList.indexOf(e.target.textContent), 1);
+        e.target.remove();
+    }
 }
