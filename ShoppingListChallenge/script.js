@@ -14,6 +14,11 @@ submit.addEventListener('click', (e) => {
         return;
     }
 
+    if(itemList.includes(item)){
+        alert(`${item} already exists in the List`);
+        return;
+    }
+
     if(submit.lastChild.textContent.includes("Update")){
         itemList.push(item);
         addItemToUL(item);
