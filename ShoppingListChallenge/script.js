@@ -1,4 +1,8 @@
-const itemList = [];
+const itemList = JSON.parse(localStorage.getItem("itemList") ?? "[]");
+if(itemList.length > 0){
+    addFilterULClrBtnToContainer();
+    itemList.forEach((item) => addItemsToUL(item));
+}
 
 const submit = document.querySelector('#item-form .btn');
 submit.addEventListener('click', (e) => {
@@ -11,38 +15,42 @@ submit.addEventListener('click', (e) => {
     }
 
     if(itemList.length < 1){
-        const container = document.querySelector('.container');
-        
-        const filterDiv = document.createElement('div');
-        filterDiv.className = "filter";
-        const filterInput = document.createElement('input');
-        filterInput.type = "input";
-        filterInput.className = "form-input-filter";
-        filterInput.id = "filter";
-        filterInput.placeholder ="Filter Items";
-        filterDiv.appendChild(filterInput);
-        filterInput.addEventListener('input', filterItems);
-
-        const ul = document.createElement('ul');
-        ul.className = "items";
-        ul.id = "item-list";
-
-        const clearBtn = document.createElement('button');
-        clearBtn.id = "clear";
-        clearBtn.className = "btn-clear";
-        clearBtn.textContent = "Clear All";
-        clearBtn.addEventListener('click', clearAllEvent);
-
-        container.appendChild(filterDiv);
-        container.appendChild(ul);
-        container.appendChild(clearBtn);
-
+        addFilterULClrBtnToContainer();
     }
 
     itemList.push(item);
     addItemsToUL(item);
-    localStorage.setItem("itemList", itemList);
+    const itemListString = JSON.stringify(itemList);
+    localStorage.setItem("itemList", itemListString);
 });
+
+function addFilterULClrBtnToContainer() {
+    const container = document.querySelector('.container');
+
+    const filterDiv = document.createElement('div');
+    filterDiv.className = "filter";
+    const filterInput = document.createElement('input');
+    filterInput.type = "input";
+    filterInput.className = "form-input-filter";
+    filterInput.id = "filter";
+    filterInput.placeholder = "Filter Items";
+    filterDiv.appendChild(filterInput);
+    filterInput.addEventListener('input', filterItems);
+
+    const ul = document.createElement('ul');
+    ul.className = "items";
+    ul.id = "item-list";
+
+    const clearBtn = document.createElement('button');
+    clearBtn.id = "clear";
+    clearBtn.className = "btn-clear";
+    clearBtn.textContent = "Clear All";
+    clearBtn.addEventListener('click', clearAllEvent);
+
+    container.appendChild(filterDiv);
+    container.appendChild(ul);
+    container.appendChild(clearBtn);
+}
 
 function addItemsToUL(item) {
     const ul = document.getElementById('item-list');
@@ -66,13 +74,15 @@ function deleteItem(e){
     if(e.target.nodeName === "I" ){
         itemList.splice(itemList.indexOf(e.target.parentNode.parentNode.textContent), 1);
         e.target.parentNode.parentNode.remove();
-        localStorage.setItem("itemList", itemList);
+        const itemListString = JSON.stringify(itemList);
+        localStorage.setItem("itemList", itemListString);
         return;
     }
     if(e.target.nodeName === "BUTTON"){
         itemList.splice(itemList.indexOf(e.target.parentNode.textContent), 1);
         e.target.parentNode.remove();
-        localStorage.setItem("itemList", itemList);
+        const itemListString = JSON.stringify(itemList);
+        localStorage.setItem("itemList", itemListString);
         return;
     }
 }
@@ -89,7 +99,8 @@ function clearAllEvent(e){
     {
         itemList.pop();
     }
-    localStorage.setItem("itemList", itemList);
+    const itemListString = JSON.stringify(itemList);
+    localStorage.setItem("itemList", itemListString);
 }
 
 
